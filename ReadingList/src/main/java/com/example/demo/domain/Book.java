@@ -1,20 +1,43 @@
 package com.example.demo.domain;
 
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
+@Table(name = "Book")
 public class Book {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private long id;
+	@NotNull
+	@Size(min=5, message="Reader must be at least 5 character long")
 	private String reader;
+	@NotNull
+	@Size(min=13, message="ISBN must be at least 13 number long")
 	private String isbn;
+	@NotNull
+	@Size(min=5, message="Title must be at least 5 character long")
 	private String title;
+	@NotNull
+	@Size(min=5, message="Author must be at least 5 character long")
 	private String author;
+	@NotNull
+	@Size(min=5, message="description must be at least 5 character long")
 	private String description;
 	/**
 	 * @return the id

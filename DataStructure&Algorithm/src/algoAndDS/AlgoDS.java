@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.Random;
@@ -20,15 +21,20 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
 import algoAndDS.BST.Node;
+import edu.princeton.cs.introcs.In;
+import edu.princeton.cs.introcs.StdDraw;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -37,16 +43,43 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.math.BigInteger;
+import java.net.URL;
 import java.security.*;
 
 public class AlgoDS {
 	
-	static int[][] dir = {{1,0},{-1,0},{0,1},{0,-1}};
+//	private static final String NON_NORMAL_CHARACTERS_PATTER = "!@#$%^&*()_-+={]}[";
+	private static final String NON_NORMAL_CHARACTERS_PATTERN = "!@#$%^&*()_-+={]}[";
 	
 	
 
 	public static void main(String[] args) throws IOException, NoSuchAlgorithmException, NoSuchProviderException {
+		/*
+		int grid[][] = {  { 1, 1, 3, 4, 5 },
+                          { 5, 1, 7, 9 },
+                          { 9, 10, 11, 12 },
+                          { 13, 14, 15, 16 } 
+                       };
 		
+		DFS(grid);
+		*/
+		int[] data = {1, 1, 2, 2, 5, 8, 9, 9};
+		System.out.println(Arrays.toString(removeDuplicateElement(data)));
+
+       /*
+       boolean [][]vis = new boolean[4][4];
+       
+       TraverseMatrixDFS matrix = new TraverseMatrixDFS();
+       matrix.BFS(grid, vis,0, 0);
+       */
+       
+		
+		
+		/*
+		Class[] classes = getClassesInPackage("algoAndDS");
+		for(Class c : classes)
+			System.out.println(c.getSimpleName().concat(".class"));
+		*/
 		
 		
 	   /*
@@ -92,6 +125,179 @@ public class AlgoDS {
 		
 		
 	}
+	
+	public static int[] removeDuplicateElement(int[] array) {
+        if(array == null) {
+            return null;
+
+        }
+        List<Integer> arrayList = IntStream.of(array).boxed().collect(Collectors.toList());
+
+        return arrayList.stream().mapToInt(Integer::intValue).distinct().toArray();
+
+    }
+	
+	public static void DFS(int[][] grid) {
+		int h = grid.length;
+		if(h == 0)
+			return;
+		int l = grid[0].length;
+		boolean[][] marked = new boolean[h][l];
+		Stack<String> s = new Stack<>();
+		s.push(0 + "," + 0);
+		while(s.isEmpty() == false) {
+			String x = s.pop();
+			int row = Integer.parseInt(x.split(",")[0]);
+			int col = Integer.parseInt(x.split(",")[1]);
+			
+			if(row < 0 || col < 0 || row >= h || col >= l || marked[row][col])
+				continue;
+			
+			marked[row][col] = true;
+			System.out.print(grid[row][col] + " ");
+			s.push(row + "," + (col - 1));
+			s.push(row + "," + (col + 1));
+			s.push((row - 1) + "," + col);
+			s.push((row + 1) + "," + col);
+			
+		}
+		
+				
+	}
+	
+	public static String findLongestWord(String sen) {
+		String[] split = sen.split(" ");
+		int max = 0;
+		String r = "";
+		for(int j = 0; j < split.length; j++) {
+			if(split[j].length() > max) {
+				max = split[j].length();
+				r = split[j];
+			}
+		}
+		return r;
+	}
+	
+	public static String removeCharacters(String str) {
+		return str.replaceAll("[^a-zA-Z0-9]", " ");
+	}
+	
+	public static String runLengthEncoding(String str) {
+		// stores output string
+        String encoding = "";
+ 
+        // base case
+        if (str == null) {
+            return encoding;
+        }
+ 
+        int count;
+ 
+        for (int i = 0; i < str.length(); i++)
+        {
+            // count occurrences of character at index `i`
+            count = 1;
+            while (i + 1 < str.length() && str.charAt(i) == str.charAt(i + 1))
+            {
+                count++;
+                i++;
+            }
+ 
+            // append current character and its count to the result
+            encoding += String.valueOf(count) + str.charAt(i);
+        }
+ 
+        return encoding;
+	}
+	
+	
+	
+	public static int forward(List<Integer> list, int target, int k) {
+		int upper = list.size() - 1;
+		int lower = 0;
+		int result = 0;
+		if(list.get(upper) == target)
+			result = list.get(0 + k);
+		else if(list.get(lower) == target)
+			result = list.get(0 + k);
+		else {
+			for(int j = 0; j < list.size(); j++)
+				if(list.get(j) == target)
+					result = list.get(j + k);
+		}
+		
+		return result;
+			
+	}
+	
+	public static int backward(List<Integer> list, int target, int k) {
+		int upper = list.size() - 1;
+		int lower = 0;
+		int result = 0;
+		if(list.get(upper) == target)
+			result = list.get(list.size() - k);
+		else if(list.get(lower) == target)
+			result = list.get((list.size() - 1) - k);
+		else {
+			for(int j = list.size()-1; j > 0; j--)
+				if(list.get(j) == target)
+					result = list.get(j - k);
+		}
+		return result;
+		
+		
+	}
+	
+	public static Class[] getClassesInPackage(String pckgname) {
+        File directory = getPackageDirectory(pckgname);
+        if (!directory.exists()) {
+            throw new IllegalArgumentException("Could not get directory resource for package " + pckgname + ".");
+        }
+ 
+        return getClassesInPackage(pckgname, directory);
+    }
+ 
+    private static Class[] getClassesInPackage(String pckgname, File directory) {
+        List<Class> classes = new ArrayList<Class>();
+        for (String filename : directory.list()) {
+            if (filename.endsWith(".class")) {
+                String classname = buildClassname(pckgname, filename);
+                try {
+                    classes.add(Class.forName(classname));
+                } catch (ClassNotFoundException e) {
+                    System.err.println("Error creating class " + classname);
+                }
+            }
+        }
+        return classes.toArray(new Class[classes.size()]);
+    }
+ 
+    private static String buildClassname(String pckgname, String filename) {
+        return pckgname + '.' + filename.replace(".class", "");
+    }
+ 
+    private static File getPackageDirectory(String pckgname) {
+        ClassLoader cld = Thread.currentThread().getContextClassLoader();
+        if (cld == null) {
+            throw new IllegalStateException("Can't get class loader.");
+        }
+ 
+        URL resource = cld.getResource(pckgname.replace('.', '/'));
+        if (resource == null) {
+            throw new RuntimeException("Package " + pckgname + " not found on classpath.");
+        }
+ 
+        return new File(resource.getFile());
+    }
+	
+	public static int sumOfTwoLists(List<Integer> list) {
+		int sum = 0;
+		for(int i : list)
+			sum += i;
+		return sum;
+	}
+
+	
 	static void superStack(String[] operations) {
         if(operations == null || operations.length == 0) {
             System.out.println("EMPTY");
@@ -105,10 +311,10 @@ public class AlgoDS {
                 list.removeLast();
             }else {
                 if(current.startsWith("push")) {
-                    list.addFirst(Integer.parseInt(current.split(" ")[4]));
+                    list.addFirst(Integer.parseInt(current.split(" ")[1]));
                 }else {
-                    int e = Integer.parseInt(current.split(" ")[5]);
-                    int k = Integer.parseInt(current.split(" ")[6]);
+                    int e = Integer.parseInt(current.split(" ")[1]);
+                    int k = Integer.parseInt(current.split(" ")[2]);
                     ListIterator<Object> iterator = list.listIterator();
                     int j = 1;
                     while(iterator.hasNext()) {
@@ -177,57 +383,9 @@ public class AlgoDS {
 	             
 		}
 	
-	public static boolean filltotop(int i,int j,int[][] mat,int n){
-        mat[i][j]=2;
-        if(i==0 && j==0){
-            return true;
-        }
-        boolean ans = false;
-		for(int[]d : dir){
-            int r = i+d[0];
-            int c = j+d[1];
-            if(r>=0&&c>=0 &&r<n && c<n && mat[r][c]==1)
-            ans|=filltotop(r,c,mat,n);
-        }
-        return ans;
-    }
 	
-	public static boolean filltobottom(int i,int j,int [][] mat,int n){
-        mat[i][j]=2;
-        if(i==n-1 && j==n-1){
-            return true;
-        }
-        boolean ans = false;
-        for(int[]d : dir){
-            int r = i+d[0];
-            int c = j+d[1];
-            if(r>=0&&c>=0 &&r<n && c<n && mat[r][c]==1)
-            ans|=filltobottom(r,c,mat,n);
-        }
-        return ans;
-    }
 	
-	 public static boolean check(int[][] mat,int n){
-	        for(int i=0;i<n;i++){
-	            for(int j=0;j<n;j++){
-	                if(mat[i][j]==0){
-	                    boolean one=false, two=false;
-	                    for(int []d:mat){
-	                        int r = i+d[0];
-	                        int c = j+d[1];
-	                         if(r>=0&&c>=0 &&r<n && c<n && mat[r][c]==2){
-	                             if(one == false)
-	                                one = true;
-	                             else if(one)
-	                                return true;
-	                         }
-	                    }
-	                }
-	            }
-	        }
-	        return false;
-	    }
-		
+	 
 	
 	public static void BFS(int[][] data) {
 		int h = data.length;

@@ -60,13 +60,17 @@ public class BST<Key extends Comparable<Key>, Value> {
 	}
 	
 	public void put(Key key, Value val) {
-		root = put(root, key, val);
+		root = put(root, key, val); 
 	}
 	
-	public Node findMax(Node x) {
+	private Node findMax(Node x) {
 		if(x == null)
 			return null;
 		return findMax(x.right);
+	}
+	
+	public Node findMax() {
+		return findMax(root);
 	}
 	
 	public void findMin() {

@@ -2,6 +2,7 @@ package algoAndDS;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
@@ -70,14 +71,14 @@ public class BSTImpl implements BinarySearchTree<Integer> {
 		return nItem;
 	}
 	
-	public int findMax() {
-		Node current = root;
-		Node  first = root;
-		while(current != null) {
-			first = current;
-			current = current.right;
-		}
-		return first.id;
+	private Node findMax(Node x) {
+		if(x == null)
+			return null;
+		return findMax(x.right);
+	}
+	
+	public Node findMax() {
+		return findMax(root);
 	}
 	
 	
@@ -189,7 +190,6 @@ public class BSTImpl implements BinarySearchTree<Integer> {
 	}
 	
 	public List<Integer> inOrderTraverse(List<Integer> array) {
-		array.add(root.id);
 		return inOrderTraverse(root, array);
 	}
 	
@@ -259,11 +259,15 @@ public class BSTImpl implements BinarySearchTree<Integer> {
 		return findSuccessor(root, node);
 	}
 	
-	public Node findMin(Node x) {
+	private Node findMin(Node x) {
 		if(x == null)
 			return null;
 		return findMin(x.left);
 					
+	}
+	
+	public void findMin() {
+		findMin(root);
 	}
 	
 	private int binarySearchDiameter(Node x) {
@@ -293,6 +297,67 @@ public class BSTImpl implements BinarySearchTree<Integer> {
 			return -1;
 		return size(x);
 	}
+	
+	private void InOrderTraverse(Node x, List<Integer> sortedNodeValues) {
+		if(x == null) 
+			return;
+		InOrderTraverse(x.left, sortedNodeValues);
+		sortedNodeValues.add(x.id);
+		InOrderTraverse(x.right, sortedNodeValues);
+	}
+	
+	public int findKthLargestValueInBst(int k) {
+		ArrayList<Integer> sortedNodeValues = new ArrayList<Integer>();
+		InOrderTraverse(root, sortedNodeValues);
+		return sortedNodeValues.get(sortedNodeValues.size() - 1);
+	}
+	
+	
+	public boolean sameBsts(List<Integer> arrayOne, List<Integer> arrayTwo) {
+		if(arrayOne == null || arrayTwo == null)
+			return false;
+		if((InOrder(root, arrayOne).equals(InOrder(root, arrayTwo))) && arrayOne.size() == arrayTwo.size())
+			return true;
+		return false;
+	}
+	
+	public List<Integer> InOrder(Node tree, List<Integer> array) {
+		if(tree == null)
+			return null;
+		InOrder(tree.left, array);
+		array.add(tree.id);
+		InOrder(tree.right, array);
+		Collections.sort(array);
+		return array;
+  }
+	
+	public List<Integer> InOrder(List<Integer> array) {
+		List<Integer> result = InOrder(root, array);
+		return result;
+	}
+	
+	
+	private int sumOfTwoMaxPathsInBinaryTree(Node x, int runningSum, List<Integer> sums) {
+		if(x == null)
+			return -1;
+		int total = runningSum + x.id;
+		if(x.left == null && x.right == null) {
+			sums.add(total);
+			return sums.get(0);
+		}
+		return sumOfTwoMaxPathsInBinaryTree(x.left, total, sums) + sumOfTwoMaxPathsInBinaryTree(x.right, total, sums);
+			
+	}
+	
+	public int sumOfTwoPathsBinaryTree() {
+		List<Integer> list = new ArrayList<Integer>();
+		return sumOfTwoMaxPathsInBinaryTree(root, 0, list);
+	}
+	
+	
+	
+	
+	
 	
 	
 	

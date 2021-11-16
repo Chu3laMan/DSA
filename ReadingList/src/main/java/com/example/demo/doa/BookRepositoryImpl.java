@@ -1,21 +1,54 @@
 package com.example.demo.doa;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 import com.example.demo.domain.Book;
 
+@Repository
 public class BookRepositoryImpl implements BookRepository {
+	
+	private static final class BookMapper implements RowMapper<Book> {
+
+		@Override
+		public Book mapRow(ResultSet rs, int rowNum) throws SQLException {
+			Book book = new Book();
+			book.setId(rs.getLong("id"));
+			book.setReader(rs.getString("reader"));
+			book.setIsbn(rs.getString("isbn"));
+			book.setTitle(rs.getString("title"));
+			book.setAuthor(rs.getString("author"));
+			book.setDescription(rs.getString("description"));
+			return book;
+		}
+		
+	}
+	
+	@Autowired
+	private NamedParameterJdbcTemplate namedParamaterJdbcTemplate;
+	
+	
+	
 
 	@Override
 	public List<Book> findAll() {
-		// TODO Auto-generated method stub
-		return null;
+		String query = "SELECT * FROM book";
+		List<Book> result = namedParamaterJdbcTemplate.query(query, new BookMapper());
+		return result;
 	}
 
 	@Override
@@ -104,7 +137,6 @@ public class BookRepositoryImpl implements BookRepository {
 
 	@Override
 	public <S extends Book> S save(S entity) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -184,6 +216,32 @@ public class BookRepositoryImpl implements BookRepository {
 	public List<Book> findByReader(String reader) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void addBook(Book book) {
+		String query = "INSERT INTO book (author, "
+				+ "description,"
+				+ "isbn,"
+				+ "reader,"
+				+ "title) "
+				+ "VALUES(:author, :description, :isbn, :reader, :title)";
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("author", book.getAuthor());
+		params.put("description", book.getDescription());
+		params.put("isbn", book.getIsbn());
+		params.put("reader", book.getReader());
+		params.put("title", book.getTitle());
+		namedParamaterJdbcTemplate.update(query, params);
+	}
+
+	
+	@Override
+	public Book getByReader(String reader) {
+		String query = "SELECT * FROM book WHERE reader = :reader";
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("reader", reader);
+		return namedParamaterJdbcTemplate.queryForObject(query, params, new BookMapper());
 	}
 
 }
