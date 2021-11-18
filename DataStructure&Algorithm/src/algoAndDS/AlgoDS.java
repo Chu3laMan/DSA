@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.net.URL;
 import java.security.*;
@@ -54,17 +55,14 @@ public class AlgoDS {
 	
 
 	public static void main(String[] args) throws IOException, NoSuchAlgorithmException, NoSuchProviderException {
-		/*
-		int grid[][] = {  { 1, 1, 3, 4, 5 },
-                          { 5, 1, 7, 9 },
-                          { 9, 10, 11, 12 },
-                          { 13, 14, 15, 16 } 
-                       };
 		
-		DFS(grid);
-		*/
-		int[] data = {1, 1, 2, 2, 5, 8, 9, 9};
-		System.out.println(Arrays.toString(removeDuplicateElement(data)));
+		int[] arr = {0, 1, 21, 33, 45, 45, 45, 45, 45, 45, 61, 71, 73};
+		System.out.println(Arrays.toString(rangeOfDuplicateNum(arr, 45)));
+
+		
+			   
+		
+		
 
        /*
        boolean [][]vis = new boolean[4][4];
@@ -126,6 +124,25 @@ public class AlgoDS {
 		
 	}
 	
+	public static int[] rangeOfDuplicateNum(int[] array, int target) {
+		int lowerBound = 0;
+		int upperBound = array.length - 1;
+		
+		while(lowerBound <=  upperBound) {
+			if(array[lowerBound] == target)
+				continue;
+			if(array[upperBound] == target)
+				return new int[] {lowerBound, upperBound};
+			
+			lowerBound++;
+			upperBound--;
+		}
+		 return new int[] {-1, -1};
+		
+	}
+	
+	
+	
 	public static int[] removeDuplicateElement(int[] array) {
         if(array == null) {
             return null;
@@ -139,28 +156,35 @@ public class AlgoDS {
 	
 	public static void DFS(int[][] grid) {
 		int h = grid.length;
-		if(h == 0)
-			return;
-		int l = grid[0].length;
-		boolean[][] marked = new boolean[h][l];
-		Stack<String> s = new Stack<>();
-		s.push(0 + "," + 0);
-		while(s.isEmpty() == false) {
-			String x = s.pop();
-			int row = Integer.parseInt(x.split(",")[0]);
-			int col = Integer.parseInt(x.split(",")[1]);
-			
-			if(row < 0 || col < 0 || row >= h || col >= l || marked[row][col])
-				continue;
-			
-			marked[row][col] = true;
-			System.out.print(grid[row][col] + " ");
-			s.push(row + "," + (col - 1));
-			s.push(row + "," + (col + 1));
-			s.push((row - 1) + "," + col);
-			s.push((row + 1) + "," + col);
-			
-		}
+        if (h == 0)
+            return;
+        int l = grid[0].length;
+
+        boolean[][] visited = new boolean[h][l];
+
+        Stack<String> stack = new Stack<>();
+
+        stack.push(0 + "," + 0);
+
+        System.out.println("Depth-First Traversal: ");
+        while (stack.empty() == false) {
+
+            String x = stack.pop();
+            int row = Integer.parseInt(x.split(",")[0]);
+            int col = Integer.parseInt(x.split(",")[1]);
+
+            if(row<0 || col<0 || row>=h || col>=l || visited[row][col])
+                continue;
+
+            visited[row][col]=true;
+            if(grid[row][col] == 5) {
+            	System.out.print(grid[row][col] +  "");
+            	stack.push(row + "," + (col-1)); //go left
+                stack.push(row + "," + (col+1)); //go right
+                stack.push((row-1) + "," + col); //go up
+                stack.push((row+1) + "," + col); //go down
+            }
+        }
 		
 				
 	}
